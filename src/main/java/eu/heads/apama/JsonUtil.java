@@ -16,7 +16,7 @@ import com.apama.event.parser.FieldTypes;
 
 public class JsonUtil {
 
-	void initEventType(String o) {
+	public void initEventType(String o) {
 
 		JSONArray objs = new JSONArray(o);
 		for (int i = 0; i < objs.length(); i++) {
@@ -34,7 +34,11 @@ public class JsonUtil {
 
 	Map<String, EventType> types = new HashMap<String, EventType>();
 
-	Event toEvent(String o) {
+	public Map<String, EventType> getTypes() {
+		return types;
+	}
+
+	public Event toEvent(String o) {
 		JSONObject obj = new JSONObject(o);
 		EventType t = types.get(obj.get("EventTypeName").toString());
 		Event e = new Event(t);
@@ -48,7 +52,7 @@ public class JsonUtil {
 		return e;
 	}
 
-	JSONObject toJson(Event evt) {
+	public JSONObject toJson(Event evt) {
 		JSONObject obj = new JSONObject();
 		EventType t = types.get(evt.getEventType().getName());
 		obj.put("EventTypeName", evt.getEventType().getName());
