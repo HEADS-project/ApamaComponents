@@ -1,0 +1,15 @@
+//sample of KevScript configuration
+repo "http://repo1.maven.org/maven2"
+include mvn:org.kevoree.library.java:org.kevoree.library.java.javaNode:release
+include mvn:org.kevoree.library.java:org.kevoree.library.java.ws:release
+add node0 : JavaNode
+add node0.cmp1 : ApamaSubscriber
+add node0.cmp2 : ApamaPublisher
+add node0.cmp3 : TestApamaTicker
+add chan665 : AsyncBroadcast
+
+bind node0.cmp3.out chan665
+bind node0.cmp2.in chan665
+
+add sync : WSGroup
+attach node0 sync
