@@ -36,7 +36,7 @@ public class ApamaPublisher {
 	public void in(Object i) {
 			try {
 				Event e = utils.toEvent((String) i);
-				System.err.println("Will send to Apama " + e);
+				//System.err.println("Will send to Apama " + e);
 				engineClient.sendEvents(e);
 			} catch (EngineException e) {
 				// TODO Auto-generated catch block
@@ -49,6 +49,7 @@ public class ApamaPublisher {
 
 	@Start
 	public void start() {
+		System.err.println(eventTypeDefinition);
 		utils.initEventType(eventTypeDefinition);
 		try {
 			engineClient = EngineClientFactory.createEngineClient(host, port,

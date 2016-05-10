@@ -1,7 +1,8 @@
 package eu.heads.apama;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,11 +23,15 @@ public class JsonUtil {
 		for (int i = 0; i < objs.length(); i++) {
 			JSONObject obj = objs.getJSONObject(i);
 			EventType t = new EventType(obj.get("EventTypeName").toString());
-			for (int j = obj.length()-1; j >= 0; j--) {
-				String f = obj.getNames(obj)[j];
-				if (!"EventTypeName".equals(f)) {
+			String[] fields = {"id",
+					"reference","streamId","title","tags","uid","pageUrl","publicationTime","insertionTime","mediaIds",""
+					+ "sentiment","keywords","entities","original","likes","shares","comments","numOfComments","isSearched","indexed","alethiometerUserScore",""
+					+ "positiveVotes","negativeVotes","votes"};
+
+			//			for (int j = obj.length() - 1; j >= 0; j--) {
+			for (String f : fields){
 					t.addField(new Field(f, getType(obj.get(f).toString())));
-				}
+//				}
 			}
 			types.put(obj.get("EventTypeName").toString(), t);
 		}
@@ -42,13 +47,27 @@ public class JsonUtil {
 		JSONObject obj = new JSONObject(o);
 		EventType t = types.get(obj.get("EventTypeName").toString());
 		Event e = new Event(t);
-		/*
-		 * for (String val :t.getFieldNames()) { System.err.println(
-		 * " set field " + val + " " + obj.get(val)); e.setField(val,
-		 * obj.get(val)); }
-		 */
-		e.setField("name", obj.get("name"));
-		e.setField("price", obj.get("price"));
+
+		String[] fields = {"id",
+				"reference","streamId","title","tags","uid","pageUrl","publicationTime","insertionTime","mediaIds",""
+				+ "sentiment","keywords","entities","original","likes","shares","comments","numOfComments","isSearched","indexed","alethiometerUserScore",""
+				+ "positiveVotes","negativeVotes","votes"};
+		for (String val : fields) {
+	//		System.err.println(" set field " + val + " " + obj.get(val));
+			Object o1 = obj.get(val);
+			if (o1 instanceof JSONArray){
+				List<String> s = new ArrayList<String>();
+				for (int i= 0; i<((JSONArray)o1).length();i++ ){
+					s.add(((JSONArray)o1).getString(i));
+				}
+				o1=s;
+			}
+			e.setField(val, o1);
+		}
+
+		
+		//e.setField("name", obj.get("name"));
+		//e.setField("price", obj.get("price"));
 		return e;
 	}
 
@@ -75,8 +94,13 @@ public class JsonUtil {
 			return FieldTypes.DECIMAL;
 		else if (t.equals("location"))
 			return FieldTypes.LOCATION;
-		else
+		else if (t.equals("string"))
 			return FieldTypes.STRING;
+		else if (t.equals("sequence<string>"))
+			return FieldTypes.sequence(FieldTypes.STRING);
+		else
+			return FieldTypes.sequence(FieldTypes.STRING);
+
 	}
 
 }

@@ -29,7 +29,18 @@ public class ApamaSubscriber {
 	@Param(defaultValue = "localhost")
 	String host;
 
-	@Param(defaultValue = "event Tick { string name; float price; } monitor simplePrint { Tick t; action onload { on all Tick(*, >10.0): t { send Tick(t.name, t.price) to \"samplechannel\";}}}")
+	// @Param(defaultValue = "event Tick { string name; float price; } monitor
+	// simplePrint { Tick t; action onload { on all Tick(*, >10.0): t { send
+	// Tick(t.name, t.price) to \"samplechannel\";}}}")
+	@Param(defaultValue = "event Item { string id; string reference; string streamId; string title; sequence<string> tags;  "
+			+ "string uid; string pageUrl; integer publicationTime; integer insertionTime; sequence<string> mediaIds; "
+			+ "string sentiment;sequence<string> keywords;  sequence<string> entities; boolean original; integer likes; "
+			+ "integer shares; sequence<string> comments; integer numOfComments; boolean isSearched; boolean indexed;"
+			+ " integer alethiometerUserScore; integer positiveVotes; integer negativeVotes; sequence<string> votes; } "
+			+ "monitor simplePrint { Item t; action onload { on all Item(*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,>5,*,*,*,*,*,*,*,*):"
+			+ "t { send Item(t.id,t.reference,t.streamId,t.title,t.tags,t.uid,t.pageUrl,t.publicationTime,t.insertionTime,t.mediaIds,"
+			+ "t.sentiment,t.keywords,t.entities,t.original,t.likes,t.shares,t.comments,t.numOfComments,t.isSearched,t.indexed,t.alethiometerUserScore,"
+			+ "t.positiveVotes,t.negativeVotes,t.votes) to \"samplechannel\";}}}")
 	String query;
 
 	@Param(defaultValue = "my-sample-process")
@@ -49,23 +60,20 @@ public class ApamaSubscriber {
 
 	EngineClientInterface engineClient;
 
-	
-	 EventParser parser;
-	
+	EventParser parser;
+
 	@Start
 	public void start() {
 		final JsonUtil utils = new JsonUtil();
 		utils.initEventType(eventTypeDefinition);
 
 		try {
-			engineClient = EngineClientFactory.createEngineClient(host, port,
-					processName);
+			engineClient = EngineClientFactory.createEngineClient(host, port, processName);
 
 			// Listen for events sent to the "samplechannel" channel
-			ConsumerOperationsInterface myConsumer = engineClient.addConsumer(
-					consummerName, channelName);
-			
-			for (String key : utils.types.keySet()){
+			ConsumerOperationsInterface myConsumer = engineClient.addConsumer(consummerName, channelName);
+
+			for (String key : utils.types.keySet()) {
 				parser = new EventParser(utils.types.get(key));
 			}
 
@@ -74,7 +82,7 @@ public class ApamaSubscriber {
 				public void handleEvent(Event evt) {
 					evt = parser.parse(evt.getText());
 					System.err.println("Will receive notification from Apama " + evt.getText());
-					if (out!= null && out.getConnectedBindingsSize()>0)
+					if (out != null && out.getConnectedBindingsSize() > 0)
 						out.send(utils.toJson(evt).toString(), null);
 				}
 			});
@@ -85,7 +93,7 @@ public class ApamaSubscriber {
 		} catch (CompoundException e) {
 			e.printStackTrace();
 			this.stop();
-		} 
+		}
 	}
 
 	@Stop
