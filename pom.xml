@@ -8,7 +8,7 @@
 	<name>ApamaComponent</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<kevoree.version>5.2.5</kevoree.version>
+		<kevoree.version>5.3.2-SNAPSHOT</kevoree.version>
 	</properties>
 
 	<dependencies>
