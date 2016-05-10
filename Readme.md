@@ -1,4 +1,3 @@
-#Run APAM in docker
 
 #Run the example
 Without docker
@@ -12,6 +11,7 @@ and then start the kevoree components
 ```bash
 mvn kev:run
 ```
+#Run APAM in docker
 
 
 ```bash
