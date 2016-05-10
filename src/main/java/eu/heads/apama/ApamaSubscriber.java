@@ -26,7 +26,7 @@ public class ApamaSubscriber {
 	@Output
 	org.kevoree.api.Port out;
 
-	@Param(defaultValue = "localhost")
+	@Param(defaultValue = "172.17.0.2")
 	String host;
 
 	// @Param(defaultValue = "event Tick { string name; float price; } monitor
