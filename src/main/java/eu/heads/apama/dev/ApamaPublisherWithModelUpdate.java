@@ -1,7 +1,5 @@
 package eu.heads.apama.dev;
 
-import java.util.List;
-
 import org.kevoree.Channel;
 import org.kevoree.ContainerRoot;
 import org.kevoree.annotation.ComponentType;
@@ -15,15 +13,7 @@ import org.kevoree.annotation.Update;
 import org.kevoree.api.ModelService;
 import org.kevoree.api.Port;
 import org.kevoree.api.handler.ModelListener;
-import org.kevoree.api.handler.UpdateCallback;
 import org.kevoree.api.handler.UpdateContext;
-import org.kevoree.factory.DefaultKevoreeFactory;
-import org.kevoree.factory.KevoreeFactory;
-import org.kevoree.pmodeling.api.KMFContainer;
-import org.kevoree.pmodeling.api.ModelCloner;
-import org.kevoree.pmodeling.api.compare.ModelCompare;
-import org.kevoree.pmodeling.api.json.JSONModelLoader;
-import org.kevoree.pmodeling.api.trace.TraceSequence;
 
 import com.apama.EngineException;
 import com.apama.engine.beans.EngineClientFactory;

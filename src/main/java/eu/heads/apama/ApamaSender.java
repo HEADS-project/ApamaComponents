@@ -14,7 +14,7 @@ import com.apama.event.Event;
 import com.apama.util.CompoundException;
 
 @ComponentType
-public class ApamaPublisher {
+public class ApamaSender {
 
 	@Param(defaultValue = "localhost")
 	String host;

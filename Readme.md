@@ -1,18 +1,33 @@
 
 #Run the example
-Without docker
-## start APAMA
 
+## Start Apama Without docker
+
+On Linux:
 ```bash
 LD_LIBRARY_PATH=lib ./bin/correlator
 ```
 
-and then start the kevoree components
+and then start the Kevoree components
 ```bash
 mvn kev:run
 ```
-#Run APAM in docker
 
+On Windows:
+```cmd
+\SoftwareAG\Apama\bin\apama_env.bat
+
+correlator
+```
+
+and then start the Kevoree components in the folder of the pom.xml:
+```cmd
+mvn kev:run
+```
+#Run Apama in docker
+
+
+On Linux:
 
 ```bash
 sudo service docker stop

@@ -4,9 +4,9 @@ include mvn:org.kevoree.library.java:org.kevoree.library.java.javaNode:release
 include mvn:org.kevoree.library.java:org.kevoree.library.java.ws:release
 add node0 : JavaNode
 //add node0.cmp1 : ApamaSubscriberWithModelUpdate 
-add node0.cmp1 : ApamaSubscriber 
+add node0.cmp1 : ApamaQueryInject
 //add node0.cmp2 : ApamaPublisherWithModelUpdate 
-add node0.cmp2 : ApamaPublisher
+add node0.cmp2 : ApamaSender
 add node0.cmp3 : TestApamaTicker
 add chan665 : AsyncBroadcast
 
