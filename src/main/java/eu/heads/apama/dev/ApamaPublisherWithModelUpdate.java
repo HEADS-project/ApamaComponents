@@ -9,6 +9,7 @@ import eu.heads.apama.JsonUtil;
 import org.kevoree.Channel;
 import org.kevoree.ContainerRoot;
 import org.kevoree.annotation.*;
+import org.kevoree.api.Context;
 import org.kevoree.api.ModelService;
 import org.kevoree.api.Port;
 import org.kevoree.api.handler.ModelListener;
@@ -18,37 +19,45 @@ import org.kevoree.api.handler.UpdateContext;
 public class ApamaPublisherWithModelUpdate implements ModelListener {
 
 	@Param(defaultValue = "localhost")
-	String host;
+	private String host;
 
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	String eventTypeDefinition;
+	private String eventTypeDefinition;
 
 	@Param(defaultValue = "15903")
-	int port;
-
-	
+	private int port;
 
 	@Param(defaultValue = "samplechannel")
-	String channelName;
+	private String channelName;
 
-	
 	@Param(defaultValue = "my-sample-process")
-	String processName;
-	final JsonUtil utils = new JsonUtil();
+	private String processName;
+
+	@KevoreeInject
+	private Context context;
+
+	@Output
+	private Port out;
+
+	@KevoreeInject
+	private ModelService service;
+
+	private final JsonUtil utils = new JsonUtil();
+	private EngineClientInterface engineClient;
+	private boolean getApamaInstance = false;
+	private ContainerRoot model;
+
 	@Input
 	public void in(Object i) {
-			try {
-				Event e = utils.toEvent((String) i);
+		try {
+			Event e = utils.toEvent((String) i);
 //				System.err.println("Will send to Apama " + e);
-				engineClient.sendEvents(e);
-			} catch (EngineException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			engineClient.sendEvents(e);
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-
-	EngineClientInterface engineClient;
 
 	@Start
 	public void start() {
@@ -65,10 +74,8 @@ public class ApamaPublisherWithModelUpdate implements ModelListener {
 
 	@Stop
 	public void stop() {
-
 		engineClient.dispose();
 		service.unregisterModelListener(this);
-
 	}
 
 	@Update
@@ -77,10 +84,8 @@ public class ApamaPublisherWithModelUpdate implements ModelListener {
 		this.start();
 	}
 
-	ContainerRoot model;
 	public boolean afterLocalUpdate(UpdateContext arg0) {
 		model = arg0.getProposedModel();
-
 		return true;
 	}
 
@@ -88,18 +93,8 @@ public class ApamaPublisherWithModelUpdate implements ModelListener {
 		return true;
 	}
 
-	boolean getApamaInstance = false;
-	
-	@KevoreeInject
-	org.kevoree.api.Context context;
-	
-	@Output
-	Port out;
-	
-	@KevoreeInject
-	ModelService service;
 	public void modelUpdated() {
-		
+
 		if (!getApamaInstance) {
 			System.err.println("update");
 			for (Channel c:  model.getHubs()){
@@ -121,16 +116,11 @@ public class ApamaPublisherWithModelUpdate implements ModelListener {
 
 	}
 
-	public void postRollback(UpdateContext arg0) {
-		
-	}
+	public void postRollback(UpdateContext arg0) {}
 
-	public void preRollback(UpdateContext arg0) {
-		
-	}
+	public void preRollback(UpdateContext arg0) {}
 
 	public boolean preUpdate(UpdateContext arg0) {
 		return true;
 	}
-
 }

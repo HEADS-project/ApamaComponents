@@ -17,17 +17,19 @@ import com.apama.event.Event;
 import com.apama.event.EventListenerAdapter;
 import com.apama.event.parser.EventParser;
 import com.apama.util.CompoundException;
+import org.kevoree.api.Context;
+import org.kevoree.api.Port;
 
 @ComponentType(version=2)
 public class ApamaSubscriber {
 	@KevoreeInject
-	org.kevoree.api.Context context;
+	private Context context;
 
 	@Output
-	org.kevoree.api.Port out;
+	private Port out;
 
 	@Param(defaultValue = "172.17.0.2")
-	String host;
+	private String host;
 
 	// @Param(defaultValue = "event Tick { string name; float price; } monitor
 	// simplePrint { Tick t; action onload { on all Tick(*, >10.0): t { send
@@ -41,26 +43,25 @@ public class ApamaSubscriber {
 			+ "t { send Item(t.id,t.reference,t.streamId,t.title,t.tags,t.uid,t.pageUrl,t.publicationTime,t.insertionTime,t.mediaIds,"
 			+ "t.sentiment,t.keywords,t.entities,t.original,t.likes,t.shares,t.comments,t.numOfComments,t.isSearched,t.indexed,t.alethiometerUserScore,"
 			+ "t.positiveVotes,t.negativeVotes,t.votes) to \"samplechannel\";}}}")
-	String query;
+	private String query;
 
 	@Param(defaultValue = "my-sample-process")
-	String processName;
+	private String processName;
 
 	@Param(defaultValue = "samplechannel")
-	String channelName;
+	private String channelName;
 
 	@Param(defaultValue = "myconsummer")
-	String consummerName;
+	private String consummerName;
 
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	String eventTypeDefinition;
+	private String eventTypeDefinition;
 
 	@Param(defaultValue = "15903")
-	int port;
+	private int port;
 
-	EngineClientInterface engineClient;
-
-	EventParser parser;
+	private EngineClientInterface engineClient;
+	private EventParser parser;
 
 	@Start
 	public void start() {
@@ -112,5 +113,4 @@ public class ApamaSubscriber {
 		this.stop();
 		this.start();
 	}
-
 }

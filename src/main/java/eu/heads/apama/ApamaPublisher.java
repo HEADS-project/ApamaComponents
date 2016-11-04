@@ -17,35 +17,31 @@ import com.apama.util.CompoundException;
 public class ApamaPublisher {
 
 	@Param(defaultValue = "localhost")
-	String host;
+	private String host;
 
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	String eventTypeDefinition;
+	private String eventTypeDefinition;
 
 	@Param(defaultValue = "15903")
-	int port;
+	private int port;
 
-	
-
-	
-	
 	@Param(defaultValue = "my-sample-process")
-	String processName;
-	final JsonUtil utils = new JsonUtil();
+	private String processName;
+
+	private final JsonUtil utils = new JsonUtil();
+	private EngineClientInterface engineClient;
+
 	@Input
 	public void in(Object i) {
-			try {
-				Event e = utils.toEvent((String) i);
-				//System.err.println("Will send to Apama " + e);
-				engineClient.sendEvents(e);
-			} catch (EngineException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+		try {
+			Event e = utils.toEvent((String) i);
+			//System.err.println("Will send to Apama " + e);
+			engineClient.sendEvents(e);
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-
-	EngineClientInterface engineClient;
 
 	@Start
 	public void start() {
@@ -57,14 +53,11 @@ public class ApamaPublisher {
 		} catch (CompoundException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	@Stop
 	public void stop() {
-
 		engineClient.dispose();
-
 	}
 
 	@Update
@@ -72,5 +65,4 @@ public class ApamaPublisher {
 		this.stop();
 		this.start();
 	}
-
 }
