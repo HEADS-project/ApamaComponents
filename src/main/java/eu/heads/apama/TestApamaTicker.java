@@ -1,18 +1,13 @@
 package eu.heads.apama;
 
+import org.kevoree.annotation.*;
+
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.kevoree.annotation.ComponentType;
-import org.kevoree.annotation.Output;
-import org.kevoree.annotation.Param;
-import org.kevoree.annotation.Start;
-import org.kevoree.annotation.Stop;
-import org.kevoree.annotation.Update;
-
-@ComponentType
+@ComponentType(version=2)
 public class TestApamaTicker {
 
 	@Output

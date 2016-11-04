@@ -18,7 +18,7 @@ import com.apama.event.EventListenerAdapter;
 import com.apama.event.parser.EventParser;
 import com.apama.util.CompoundException;
 
-@ComponentType
+@ComponentType(version=2)
 public class ApamaSubscriber {
 	@KevoreeInject
 	org.kevoree.api.Context context;

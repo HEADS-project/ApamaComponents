@@ -8,7 +8,7 @@
 	<name>ApamaComponent</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<kevoree.version>5.3.2-SNAPSHOT</kevoree.version>
+		<kevoree.version>5.4.0-SNAPSHOT</kevoree.version>
 	</properties>
 
 	<dependencies>
@@ -66,8 +66,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<nodename>node0</nodename>
-					<model>src/main/kevs/main.kevs</model>
+					<namespace>heads</namespace>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -99,4 +98,3 @@
 		</repository>
 	</repositories>
 </project>
-		
