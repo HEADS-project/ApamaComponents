@@ -1,29 +1,29 @@
 package eu.heads.apama;
 
+<<<<<<< HEAD
+=======
+import org.kevoree.annotation.*;
+import org.kevoree.api.Port;
+
+import java.util.Random;
+>>>>>>> refs/remotes/origin/master
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.kevoree.annotation.ComponentType;
-import org.kevoree.annotation.Output;
-import org.kevoree.annotation.Param;
-import org.kevoree.annotation.Start;
-import org.kevoree.annotation.Stop;
-import org.kevoree.annotation.Update;
-
-@ComponentType
+@ComponentType(version=2)
 public class TestApamaTicker {
 
 	@Output
-	org.kevoree.api.Port out;
-
-	private ScheduledExecutorService ser;
+	private Port out;
 
 	@Param(defaultValue = "2000")
-	Long delay;
+	private Long delay;
 
 	@Param(defaultValue = "1000")
-	Long period;
+	private Long period;
+
+	private ScheduledExecutorService ser;
 
 	@Start
 	public void start() {
@@ -42,12 +42,10 @@ public class TestApamaTicker {
 			}
 
 		}, delay, period, TimeUnit.MILLISECONDS);
-
 	}
 
 	@Stop
 	public void stop() {
-
 		ser.shutdown();
 	}
 

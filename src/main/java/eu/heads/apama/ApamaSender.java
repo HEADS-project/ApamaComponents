@@ -13,39 +13,40 @@ import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.event.Event;
 import com.apama.util.CompoundException;
 
+<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaSender.java
 @ComponentType
 public class ApamaSender {
+=======
+@ComponentType(version=2)
+public class ApamaPublisher {
+>>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaPublisher.java
 
 	@Param(defaultValue = "localhost")
-	String host;
+	private String host;
 
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	String eventTypeDefinition;
+	private String eventTypeDefinition;
 
 	@Param(defaultValue = "15903")
-	int port;
+	private int port;
 
-	
-
-	
-	
 	@Param(defaultValue = "my-sample-process")
-	String processName;
-	final JsonUtil utils = new JsonUtil();
+	private String processName;
+
+	private final JsonUtil utils = new JsonUtil();
+	private EngineClientInterface engineClient;
+
 	@Input
 	public void in(Object i) {
-			try {
-				Event e = utils.toEvent((String) i);
-				//System.err.println("Will send to Apama " + e);
-				engineClient.sendEvents(e);
-			} catch (EngineException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+		try {
+			Event e = utils.toEvent((String) i);
+			//System.err.println("Will send to Apama " + e);
+			engineClient.sendEvents(e);
+		} catch (EngineException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-
-	EngineClientInterface engineClient;
 
 	@Start
 	public void start() {
@@ -57,14 +58,11 @@ public class ApamaSender {
 		} catch (CompoundException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	@Stop
 	public void stop() {
-
 		engineClient.dispose();
-
 	}
 
 	@Update
@@ -72,5 +70,4 @@ public class ApamaSender {
 		this.stop();
 		this.start();
 	}
-
 }

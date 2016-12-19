@@ -1,16 +1,18 @@
 package eu.heads.apama.dev;
 
-import java.util.List;
-
+import com.apama.EngineException;
+import com.apama.engine.MonitorScript;
+import com.apama.engine.beans.EngineClientFactory;
+import com.apama.engine.beans.interfaces.ConsumerOperationsInterface;
+import com.apama.engine.beans.interfaces.EngineClientInterface;
+import com.apama.event.Event;
+import com.apama.event.EventListenerAdapter;
+import com.apama.event.parser.EventParser;
+import com.apama.util.CompoundException;
+import eu.heads.apama.JsonUtil;
 import org.kevoree.ContainerRoot;
-import org.kevoree.annotation.ComponentType;
-import org.kevoree.annotation.Input;
-import org.kevoree.annotation.KevoreeInject;
-import org.kevoree.annotation.Output;
-import org.kevoree.annotation.Param;
-import org.kevoree.annotation.Start;
-import org.kevoree.annotation.Stop;
-import org.kevoree.annotation.Update;
+import org.kevoree.annotation.*;
+import org.kevoree.api.Context;
 import org.kevoree.api.ModelService;
 import org.kevoree.api.handler.ModelListener;
 import org.kevoree.api.handler.UpdateCallback;
@@ -23,51 +25,41 @@ import org.kevoree.pmodeling.api.compare.ModelCompare;
 import org.kevoree.pmodeling.api.json.JSONModelLoader;
 import org.kevoree.pmodeling.api.trace.TraceSequence;
 
-import com.apama.EngineException;
-import com.apama.engine.MonitorScript;
-import com.apama.engine.beans.EngineClientFactory;
-import com.apama.engine.beans.interfaces.ConsumerOperationsInterface;
-import com.apama.engine.beans.interfaces.EngineClientInterface;
-import com.apama.event.Event;
-import com.apama.event.EventListenerAdapter;
-import com.apama.event.parser.EventParser;
-import com.apama.util.CompoundException;
+import java.util.List;
 
-import eu.heads.apama.JsonUtil;
-
-@ComponentType
+@ComponentType(version=2)
 public class ApamaSubscriberWithModelUpdate implements ModelListener{
 	@KevoreeInject
-	org.kevoree.api.Context context;
+	private Context context;
 
 	@Output
-	org.kevoree.api.Port out;
+	private Port out;
 
 	@Param(defaultValue = "localhost")
-	String host;
+	private String host;
 
 	@Param(defaultValue = "event Tick { string name; float price; } monitor simplePrint { Tick t; action onload { on all Tick(*, >10.0): t { send Tick(t.name, t.price) to \"samplechannel\";}}}")
-	String query;
+	private String query;
 
 	@Param(defaultValue = "my-sample-process")
-	String processName;
+	private String processName;
 
 	@Param(defaultValue = "samplechannel")
-	String channelName;
+	private String channelName;
 
 	@Param(defaultValue = "myconsummer")
-	String consummerName;
+	private String consummerName;
 
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	String eventTypeDefinition;
+	private String eventTypeDefinition;
 
 	@Param(defaultValue = "15903")
-	int port;
+	private int port;
 
-	EngineClientInterface engineClient;
-
-	
-	 EventParser parser;
+	private EngineClientInterface engineClient;
+	private EventParser parser;
+	private boolean getApamaModel = false;
+	private boolean getApamaInstance = false;
 	
 	@Start
 	public void start() {
@@ -127,7 +119,6 @@ public class ApamaSubscriberWithModelUpdate implements ModelListener{
 	ContainerRoot model;
 	public boolean afterLocalUpdate(UpdateContext arg0) {
 		model = arg0.getProposedModel();
-
 		return true;
 	}
 
@@ -135,19 +126,13 @@ public class ApamaSubscriberWithModelUpdate implements ModelListener{
 		return true;
 	}
 
-	boolean getApamaModel = false;
-	boolean getApamaInstance = false;
-	
 	@Input
 	public void in(Object i) {
 	}
 
-	
 	@KevoreeInject
 	ModelService service;
 	public void modelUpdated() {
-		
-		
 		//String channelDef = "{\"class\":\"org.kevoree.ContainerRoot@0.55733997444622221449682749209\",\"generated_KMF_ID\":\"0.55733997444622221449682749209\",\"nodes\":[],\"repositories\":[],\"hubs\":[],\"mBindings\":[],\"groups\":[],\"packages\":[{\"class\":\"org.kevoree.Package@eu\",\"name\":\"eu\",\"packages\":[{\"class\":\"org.kevoree.Package@heads\",\"name\":\"heads\",\"packages\":[],\"typeDefinitions\":[{\"class\":\"org.kevoree.ChannelType@name=ApamaBus,version=1.0.0\",\"upperFragments\":\"0\",\"abstract\":\"false\",\"upperBindings\":\"0\",\"lowerBindings\":\"0\",\"lowerFragments\":\"0\",\"name\":\"ApamaBus\",\"version\":\"1.0.0\",\"deployUnits\":[\"packages[eu]/packages[heads]/deployUnits[hashcode=,name=ApamaBus,version=1.0.0]\"],\"superTypes\":[],\"dictionaryType\":[{\"class\":\"org.kevoree.DictionaryType@0.163964800769463181449682749260\",\"generated_KMF_ID\":\"0.163964800769463181449682749260\",\"attributes\":[]}],\"metaData\":[]}],\"deployUnits\":[{\"class\":\"org.kevoree.DeployUnit@hashcode=,name=ApamaBus,version=1.0.0\",\"name\":\"ApamaBus\",\"hashcode\":\"\",\"url\":\"\",\"version\":\"1.0.0\",\"requiredLibs\":[],\"filters\":[{\"class\":\"org.kevoree.Value@platform\",\"name\":\"platform\",\"value\":\"java\"}]}]}],\"typeDefinitions\":[],\"deployUnits\":[]}]}";
 		String channelDef = "{\"class\":\"org.kevoree.ContainerRoot@0.55733997444622221449682749209\",\"generated_KMF_ID\":\"0.55733997444622221449682749209\",\"nodes\":[],\"repositories\":[],\"hubs\":[],\"mBindings\":[],\"groups\":[],\"packages\":[{\"class\":\"org.kevoree.Package@eu\",\"name\":\"eu\",\"packages\":[{\"class\":\"org.kevoree.Package@heads\",\"name\":\"heads\",\"packages\":[],\"typeDefinitions\":[{\"class\":\"org.kevoree.ChannelType@name=ApamaBus,version=1.0.0\",\"upperFragments\":\"0\",\"abstract\":\"false\",\"upperBindings\":\"0\",\"lowerBindings\":\"0\",\"lowerFragments\":\"0\",\"name\":\"ApamaBus\",\"version\":\"1.0.0\",\"superTypes\":[],\"dictionaryType\":[{\"class\":\"org.kevoree.DictionaryType@0.163964800769463181449682749260\",\"generated_KMF_ID\":\"0.163964800769463181449682749260\",\"attributes\":[]}],\"metaData\":[]}]}],\"typeDefinitions\":[],\"deployUnits\":[]}]}";
 		KevoreeFactory fact = new DefaultKevoreeFactory();
@@ -186,20 +171,13 @@ public class ApamaSubscriberWithModelUpdate implements ModelListener{
 						}
 					});
 		}
-
 	}
 
-	public void postRollback(UpdateContext arg0) {
-		
-	}
+	public void postRollback(UpdateContext arg0) {}
 
-	public void preRollback(UpdateContext arg0) {
-		
-	}
+	public void preRollback(UpdateContext arg0) {}
 
 	public boolean preUpdate(UpdateContext arg0) {
 		return true;
 	}
-
-
 }

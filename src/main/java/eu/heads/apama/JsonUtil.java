@@ -1,19 +1,15 @@
 package eu.heads.apama;
 
+import com.apama.event.Event;
+import com.apama.event.parser.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.apama.event.Event;
-import com.apama.event.parser.EventType;
-import com.apama.event.parser.Field;
-import com.apama.event.parser.FieldType;
-import com.apama.event.parser.FieldTypes;
 
 public class JsonUtil {
 
@@ -29,9 +25,31 @@ public class JsonUtil {
 					+ "positiveVotes","negativeVotes","votes"};
 
 			//			for (int j = obj.length() - 1; j >= 0; j--) {
+<<<<<<< HEAD
 //				}
 			for (String f : fields){
 					t.addField(new Field(f, getType(obj.get(f).toString())));
+=======
+			for (String f : fields) {
+				String type = obj.get(f).toString();
+				if (type.equals("boolean")) {
+					t.addField(new Field<Boolean>(f, FieldTypes.BOOLEAN));
+				} else if (type.equals("int")) {
+					t.addField(new Field<Long>(f, FieldTypes.INTEGER));
+				} else if (type.equals("float")) {
+					t.addField(new Field<Double>(f, FieldTypes.FLOAT));
+				} else if (type.equals("decimal")) {
+					t.addField(new Field<DecimalFieldValue>(f, FieldTypes.DECIMAL));
+				} else if (type.equals("location")) {
+					t.addField(new Field<LocationType>(f, FieldTypes.LOCATION));
+				} else if (type.equals("string")) {
+					t.addField(new Field<String>(f, FieldTypes.STRING));
+				} else if (type.equals("sequence<string>")) {
+					t.addField(new Field<List<String>>(f, FieldTypes.sequence(FieldTypes.STRING)));
+				} else {
+					t.addField(new Field<List<String>>(f, FieldTypes.sequence(FieldTypes.STRING)));
+				}
+>>>>>>> refs/remotes/origin/master
 			}
 			types.put(obj.get("EventTypeName").toString(), t);
 		}
@@ -53,7 +71,7 @@ public class JsonUtil {
 				+ "sentiment","keywords","entities","original","likes","shares","comments","numOfComments","isSearched","indexed","alethiometerUserScore",""
 				+ "positiveVotes","negativeVotes","votes"};
 		for (String val : fields) {
-	//		System.err.println(" set field " + val + " " + obj.get(val));
+			//		System.err.println(" set field " + val + " " + obj.get(val));
 			Object o1 = obj.get(val);
 			if (o1 instanceof JSONArray){
 				List<String> s = new ArrayList<String>();
@@ -65,7 +83,7 @@ public class JsonUtil {
 			e.setField(val, o1);
 		}
 
-		
+
 		//e.setField("name", obj.get("name"));
 		//e.setField("price", obj.get("price"));
 		return e;
@@ -82,25 +100,4 @@ public class JsonUtil {
 		}
 		return obj;
 	}
-
-	private FieldType getType(String t) {
-		if (t.equals("boolean"))
-			return FieldTypes.BOOLEAN;
-		else if (t.equals("int"))
-			return FieldTypes.INTEGER;
-		else if (t.equals("float"))
-			return FieldTypes.FLOAT;
-		else if (t.equals("decimal"))
-			return FieldTypes.DECIMAL;
-		else if (t.equals("location"))
-			return FieldTypes.LOCATION;
-		else if (t.equals("string"))
-			return FieldTypes.STRING;
-		else if (t.equals("sequence<string>"))
-			return FieldTypes.sequence(FieldTypes.STRING);
-		else
-			return FieldTypes.sequence(FieldTypes.STRING);
-
-	}
-
 }
