@@ -8,28 +8,37 @@ import org.kevoree.annotation.Start;
 import org.kevoree.annotation.Stop;
 import org.kevoree.annotation.Update;
 
-import com.apama.EngineException;
 import com.apama.engine.MonitorScript;
 import com.apama.engine.beans.EngineClientFactory;
-import com.apama.engine.beans.interfaces.ConsumerOperationsInterface;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
-import com.apama.event.Event;
-import com.apama.event.EventListenerAdapter;
 import com.apama.event.parser.EventParser;
 import com.apama.util.CompoundException;
 import org.kevoree.api.Context;
 import org.kevoree.api.Port;
 
+<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaQueryInject.java
+@ComponentType
+public class ApamaQueryInject {
+=======
 @ComponentType(version=2)
 public class ApamaSubscriber {
+>>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaSubscriber.java
 	@KevoreeInject
 	private Context context;
 
 	@Output
 	private Port out;
 
+<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaQueryInject.java
+	@Param(defaultValue = "localhost")
+	String host;
+	
+	@Param(defaultValue = "15903")
+	int port;
+=======
 	@Param(defaultValue = "172.17.0.2")
 	private String host;
+>>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaSubscriber.java
 
 	// @Param(defaultValue = "event Tick { string name; float price; } monitor
 	// simplePrint { Tick t; action onload { on all Tick(*, >10.0): t { send
@@ -39,7 +48,8 @@ public class ApamaSubscriber {
 			+ "string sentiment;sequence<string> keywords;  sequence<string> entities; boolean original; integer likes; "
 			+ "integer shares; sequence<string> comments; integer numOfComments; boolean isSearched; boolean indexed;"
 			+ " integer alethiometerUserScore; integer positiveVotes; integer negativeVotes; sequence<string> votes; } "
-			+ "monitor simplePrint { Item t; action onload { on all Item(*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,>5,*,*,*,*,*,*,*,*):"
+//			+ "monitor simplePrint { Item t; action onload { on all Item(*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,>5,*,*,*,*,*,*,*,*):"
+			+ "monitor simplePrint { Item t; action onload { on all Item(shares>5):"
 			+ "t { send Item(t.id,t.reference,t.streamId,t.title,t.tags,t.uid,t.pageUrl,t.publicationTime,t.insertionTime,t.mediaIds,"
 			+ "t.sentiment,t.keywords,t.entities,t.original,t.likes,t.shares,t.comments,t.numOfComments,t.isSearched,t.indexed,t.alethiometerUserScore,"
 			+ "t.positiveVotes,t.negativeVotes,t.votes) to \"samplechannel\";}}}")
@@ -57,11 +67,17 @@ public class ApamaSubscriber {
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
 	private String eventTypeDefinition;
 
+<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaQueryInject.java
+	EngineClientInterface engineClient;
+
+	EventParser parser;
+=======
 	@Param(defaultValue = "15903")
 	private int port;
 
 	private EngineClientInterface engineClient;
 	private EventParser parser;
+>>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaSubscriber.java
 
 	@Start
 	public void start() {
@@ -70,23 +86,6 @@ public class ApamaSubscriber {
 
 		try {
 			engineClient = EngineClientFactory.createEngineClient(host, port, processName);
-
-			// Listen for events sent to the "samplechannel" channel
-			ConsumerOperationsInterface myConsumer = engineClient.addConsumer(consummerName, channelName);
-
-			for (String key : utils.types.keySet()) {
-				parser = new EventParser(utils.types.get(key));
-			}
-
-			myConsumer.addEventListener(new EventListenerAdapter() {
-				@Override
-				public void handleEvent(Event evt) {
-					evt = parser.parse(evt.getText());
-					System.err.println("Will receive notification from Apama " + evt.getText());
-					if (out != null && out.getConnectedBindingsSize() > 0)
-						out.send(utils.toJson(evt).toString(), null);
-				}
-			});
 
 			// Inject some MonitorScript
 			MonitorScript epl = new MonitorScript(query);
@@ -99,13 +98,9 @@ public class ApamaSubscriber {
 
 	@Stop
 	public void stop() {
-		try {
-			engineClient.deleteAll();
-		} catch (EngineException e) {
-			e.printStackTrace();
-		} finally {
-			engineClient.dispose();
-		}
+		// do NOT deleteAll().
+		// This may delete scripts from other applications running in the same correlator.
+		engineClient.dispose();
 	}
 
 	@Update

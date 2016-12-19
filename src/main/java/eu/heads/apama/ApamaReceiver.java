@@ -1,5 +1,6 @@
 package eu.heads.apama;
 
+import org.json.JSONObject;
 import org.kevoree.annotation.ComponentType;
 import org.kevoree.annotation.Input;
 import org.kevoree.annotation.Param;
@@ -9,39 +10,54 @@ import org.kevoree.annotation.Update;
 
 import com.apama.EngineException;
 import com.apama.engine.beans.EngineClientFactory;
+import com.apama.engine.beans.interfaces.ConsumerOperationsInterface;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.event.Event;
+import com.apama.event.EventListenerAdapter;
 import com.apama.util.CompoundException;
 
-@ComponentType(version=2)
-public class ApamaPublisher {
+@ComponentType
+public class ApamaReceiver {
 
 	@Param(defaultValue = "localhost")
-	private String host;
+	String host;
 
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	private String eventTypeDefinition;
+	String eventTypeDefinition;
 
 	@Param(defaultValue = "15903")
-	private int port;
+	int port;
+
+	@Param(defaultValue = "samplechannel")
+	String channelName;
+
+	@Param(defaultValue = "myconsummer")
+	String consummerName;
 
 	@Param(defaultValue = "my-sample-process")
-	private String processName;
-
-	private final JsonUtil utils = new JsonUtil();
-	private EngineClientInterface engineClient;
-
+	String processName;
+	
+	final JsonUtil utils = new JsonUtil();
+	
 	@Input
 	public void in(Object i) {
-		try {
-			Event e = utils.toEvent((String) i);
-			//System.err.println("Will send to Apama " + e);
-			engineClient.sendEvents(e);
-		} catch (EngineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			try {
+				// Listen for events on the 'channelName' channel
+				ConsumerOperationsInterface eventConsumer = engineClient.addConsumer(consummerName, channelName);
+				eventConsumer.addEventListener(new EventListenerAdapter() {
+					@Override
+					public void handleEvent(Event evt) {
+						JSONObject jsonObject = utils.toJson(evt);
+						System.out.println("Event listener received event with message: '" + jsonObject.toString() + "'");
+					}
+				});
+			} catch (EngineException e) {
+				e.printStackTrace();
+			}
+
 	}
+
+	EngineClientInterface engineClient;
 
 	@Start
 	public void start() {
@@ -53,11 +69,14 @@ public class ApamaPublisher {
 		} catch (CompoundException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	@Stop
 	public void stop() {
+
 		engineClient.dispose();
+
 	}
 
 	@Update
@@ -65,4 +84,5 @@ public class ApamaPublisher {
 		this.stop();
 		this.start();
 	}
+
 }

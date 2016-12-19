@@ -25,6 +25,11 @@ public class JsonUtil {
 					+ "positiveVotes","negativeVotes","votes"};
 
 			//			for (int j = obj.length() - 1; j >= 0; j--) {
+<<<<<<< HEAD
+//				}
+			for (String f : fields){
+					t.addField(new Field(f, getType(obj.get(f).toString())));
+=======
 			for (String f : fields) {
 				String type = obj.get(f).toString();
 				if (type.equals("boolean")) {
@@ -44,6 +49,7 @@ public class JsonUtil {
 				} else {
 					t.addField(new Field<List<String>>(f, FieldTypes.sequence(FieldTypes.STRING)));
 				}
+>>>>>>> refs/remotes/origin/master
 			}
 			types.put(obj.get("EventTypeName").toString(), t);
 		}

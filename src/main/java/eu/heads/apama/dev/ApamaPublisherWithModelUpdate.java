@@ -1,5 +1,23 @@
 package eu.heads.apama.dev;
 
+<<<<<<< HEAD
+import org.kevoree.Channel;
+import org.kevoree.ContainerRoot;
+import org.kevoree.annotation.ComponentType;
+import org.kevoree.annotation.Input;
+import org.kevoree.annotation.KevoreeInject;
+import org.kevoree.annotation.Output;
+import org.kevoree.annotation.Param;
+import org.kevoree.annotation.Start;
+import org.kevoree.annotation.Stop;
+import org.kevoree.annotation.Update;
+import org.kevoree.api.ModelService;
+import org.kevoree.api.Port;
+import org.kevoree.api.handler.ModelListener;
+import org.kevoree.api.handler.UpdateContext;
+
+=======
+>>>>>>> refs/remotes/origin/master
 import com.apama.EngineException;
 import com.apama.engine.beans.EngineClientFactory;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
