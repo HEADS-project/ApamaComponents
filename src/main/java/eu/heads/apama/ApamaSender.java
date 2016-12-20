@@ -13,13 +13,7 @@ import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.event.Event;
 import com.apama.util.CompoundException;
 
-<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaSender.java
-@ComponentType
 public class ApamaSender {
-=======
-@ComponentType(version=2)
-public class ApamaPublisher {
->>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaPublisher.java
 
 	@Param(defaultValue = "localhost")
 	private String host;

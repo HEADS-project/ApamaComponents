@@ -16,29 +16,17 @@ import com.apama.util.CompoundException;
 import org.kevoree.api.Context;
 import org.kevoree.api.Port;
 
-<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaQueryInject.java
-@ComponentType
 public class ApamaQueryInject {
-=======
-@ComponentType(version=2)
-public class ApamaSubscriber {
->>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaSubscriber.java
+
 	@KevoreeInject
 	private Context context;
 
 	@Output
 	private Port out;
 
-<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaQueryInject.java
-	@Param(defaultValue = "localhost")
-	String host;
-	
-	@Param(defaultValue = "15903")
-	int port;
-=======
+
 	@Param(defaultValue = "172.17.0.2")
 	private String host;
->>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaSubscriber.java
 
 	// @Param(defaultValue = "event Tick { string name; float price; } monitor
 	// simplePrint { Tick t; action onload { on all Tick(*, >10.0): t { send
@@ -67,17 +55,12 @@ public class ApamaSubscriber {
 	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
 	private String eventTypeDefinition;
 
-<<<<<<< HEAD:src/main/java/eu/heads/apama/ApamaQueryInject.java
-	EngineClientInterface engineClient;
 
-	EventParser parser;
-=======
 	@Param(defaultValue = "15903")
 	private int port;
 
 	private EngineClientInterface engineClient;
 	private EventParser parser;
->>>>>>> refs/remotes/origin/master:src/main/java/eu/heads/apama/ApamaSubscriber.java
 
 	@Start
 	public void start() {

@@ -11,7 +11,7 @@ import com.apama.engine.beans.EngineClientFactory;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.util.CompoundException;
 
-@ComponentType
+
 public class ApamaQueryDelete {
 //	@KevoreeInject
 //	org.kevoree.api.Context context;
