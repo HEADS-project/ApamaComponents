@@ -4,9 +4,9 @@ include mvn:org.kevoree.library.java:org.kevoree.library.java.javaNode:release
 include mvn:org.kevoree.library.java:org.kevoree.library.java.ws:release
 add node0 : JavaNode
 //add node0.cmp1 : ApamaSubscriberWithModelUpdate 
-add node0.cmp1 : ApamaSubscriber 
+add node0.cmp1 : ApamaQueryInject 
 set node0.cmp1.eventTypeDefinition = '[  {  \"EventTypeName\" : \"Item\",  \"id\": \"string\",  \"reference\": \"string\",  \"streamId\": \"string\",  \"title\": \"string\" ,  \"tags\": \"sequence<string>\", \"uid\": \"string\" , \"pageUrl\":\"string\",  \"publicationTime\":\"int\",\"insertionTime\":\"int\",\"mediaIds\":\"sequence<string>\", \"sentiment\":\"string\", \"keywords\":\"sequence<string>\", \"entities\" :\"sequence<string>\", \"original\":\"boolean\",\"likes\":\"int\",\"shares\":\"int\",\"comments\":\"sequence<string>\",\"numOfComments\":\"int\",\"isSearched\":\"boolean\", \"indexed\":\"boolean\",\"alethiometerUserScore\":\"int\",\"positiveVotes\":\"int\",\"negativeVotes\":\"int\", \"votes\" :\"sequence<string>\" }]'
-add node0.cmp2 : ApamaPublisher
+add node0.cmp2 : ApamaSender
 set node0.cmp2.eventTypeDefinition = '[  {  \"EventTypeName\" : \"Item\",  \"id\": \"string\",  \"reference\": \"string\",  \"streamId\": \"string\",  \"title\": \"string\" ,  \"tags\": \"sequence<string>\", \"uid\": \"string\" , \"pageUrl\":\"string\",  \"publicationTime\":\"int\",\"insertionTime\":\"int\",\"mediaIds\":\"sequence<string>\", \"sentiment\":\"string\", \"keywords\":\"sequence<string>\", \"entities\" :\"sequence<string>\", \"original\":\"boolean\",\"likes\":\"int\",\"shares\":\"int\",\"comments\":\"sequence<string>\",\"numOfComments\":\"int\",\"isSearched\":\"boolean\", \"indexed\":\"boolean\",\"alethiometerUserScore\":\"int\",\"positiveVotes\":\"int\",\"negativeVotes\":\"int\", \"votes\" :\"sequence<string>\" }]'
 add node0.cmp3 : TestApamaTicker
 add chan665 : AsyncBroadcast

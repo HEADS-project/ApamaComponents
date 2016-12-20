@@ -1,5 +1,6 @@
 package eu.heads.apama;
 
+
 import org.kevoree.annotation.*;
 import org.kevoree.api.Port;
 
@@ -28,7 +29,7 @@ public class TestApamaTicker {
 		ser.scheduleAtFixedRate(new Runnable() {
 
 			public void run() {
-				Random r = new Random();
+//				Random r = new Random();
 				// out.send("{ \"EventTypeName\": \"Tick\", \"name\": \"toto\",
 				// \"price\": "+r.nextFloat()*30+"}", null);
 				// out.send("{ \"EventTypeName\": \"Tick\", \"name\": \"toto\",

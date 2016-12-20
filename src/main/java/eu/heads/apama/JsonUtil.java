@@ -25,6 +25,7 @@ public class JsonUtil {
 					+ "positiveVotes","negativeVotes","votes"};
 
 			//			for (int j = obj.length() - 1; j >= 0; j--) {
+
 			for (String f : fields) {
 				String type = obj.get(f).toString();
 				if (type.equals("boolean")) {
