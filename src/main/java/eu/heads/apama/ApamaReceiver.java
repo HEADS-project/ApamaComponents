@@ -16,6 +16,7 @@ import com.apama.event.Event;
 import com.apama.event.EventListenerAdapter;
 import com.apama.util.CompoundException;
 
+@ComponentType(version=1)
 public class ApamaReceiver {
 
 	@Param(defaultValue = "localhost")

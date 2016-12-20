@@ -11,7 +11,6 @@ set node0.cmp3.eventTypeDefinition = '[  {  \"EventTypeName\" : \"Item\",  \"id\
 add node0.cmp4 : TestApamaTicker
 add chan665 : AsyncBroadcast
 
-
 bind node0.cmp4.out chan665
 bind node0.cmp3.in chan665
 
