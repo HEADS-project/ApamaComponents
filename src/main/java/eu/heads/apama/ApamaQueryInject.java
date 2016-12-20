@@ -16,6 +16,7 @@ import com.apama.util.CompoundException;
 import org.kevoree.api.Context;
 import org.kevoree.api.Port;
 
+@ComponentType(version=1)
 public class ApamaQueryInject {
 
 	@KevoreeInject

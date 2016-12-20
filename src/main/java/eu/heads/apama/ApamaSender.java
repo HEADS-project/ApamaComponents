@@ -13,6 +13,7 @@ import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.event.Event;
 import com.apama.util.CompoundException;
 
+@ComponentType(version=1)
 public class ApamaSender {
 
 	@Param(defaultValue = "localhost")
