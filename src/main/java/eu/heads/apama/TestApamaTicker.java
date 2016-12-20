@@ -1,12 +1,10 @@
 package eu.heads.apama;
 
-<<<<<<< HEAD
-=======
+
 import org.kevoree.annotation.*;
 import org.kevoree.api.Port;
 
 import java.util.Random;
->>>>>>> refs/remotes/origin/master
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
