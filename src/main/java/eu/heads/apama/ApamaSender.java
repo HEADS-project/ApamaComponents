@@ -2,67 +2,117 @@ package eu.heads.apama;
 
 import org.kevoree.annotation.ComponentType;
 import org.kevoree.annotation.Input;
+import org.kevoree.annotation.KevoreeInject;
 import org.kevoree.annotation.Param;
 import org.kevoree.annotation.Start;
 import org.kevoree.annotation.Stop;
 import org.kevoree.annotation.Update;
+import org.kevoree.api.Context;
+import org.kevoree.log.Log;
 
 import com.apama.EngineException;
+import com.apama.engine.EngineStatus;
 import com.apama.engine.beans.EngineClientFactory;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.event.Event;
+import com.apama.event.parser.EventParser;
+import com.apama.event.parser.EventType;
+import com.apama.event.parser.Field;
+import com.apama.event.parser.FieldTypes;
 import com.apama.util.CompoundException;
 
-@ComponentType(version=1)
+@ComponentType(version = 2, description = "Sends Apama events to Apama input channel for messages received on a Kevoree port.")
 public class ApamaSender {
 
-	@Param(defaultValue = "localhost")
-	private String host;
+	private static final String FIELD_MESSAGE = "message";
+	private static final String EVENT_TYPE_NAME = "JsonEvent";
+	static final Field<String> FIELD_TEXT = FieldTypes.STRING.newField(FIELD_MESSAGE);
+	static final EventType JSON_EVENT = new EventType(EVENT_TYPE_NAME, FIELD_TEXT);
+	static final EventParser EVENT_PARSER = new EventParser(JSON_EVENT);
 
-	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	private String eventTypeDefinition;
+	@Param(defaultValue = "localhost")
+	private String host = "localhost";
 
 	@Param(defaultValue = "15903")
-	private int port;
+	private int port = 15903;
 
-	@Param(defaultValue = "my-sample-process")
-	private String processName;
+	@Param(defaultValue = "my-sender-process")
+	private String processName = "my-sender-process";
 
-	private final JsonUtil utils = new JsonUtil();
 	private EngineClientInterface engineClient;
 
+	@KevoreeInject
+	private Context context;
+
 	@Input
-	public void in(Object i) {
+	public void in(String message) {
 		try {
-			Event e = utils.toEvent((String) i);
-			//System.err.println("Will send to Apama " + e);
-			engineClient.sendEvents(e);
+			Event event = null;
+			if (message.startsWith("{")) {
+				// assume JSON String, add as a message field to JsonEvent.
+				event = new Event(JSON_EVENT);
+				event.setField(FIELD_MESSAGE, FieldTypes.STRING, message);
+			} else {
+				event = new Event(message);
+			}
+			engineClient.sendEvents(event);
+			EngineStatus status = engineClient.getRemoteStatus();
+			logInfo(status.toString());
 		} catch (EngineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logError("Error while sending message to Apama.", e);
 		}
 	}
 
 	@Start
 	public void start() {
-		System.err.println(eventTypeDefinition);
-		utils.initEventType(eventTypeDefinition);
 		try {
-			engineClient = EngineClientFactory.createEngineClient(host, port,
-					processName);
+			engineClient = EngineClientFactory.createEngineClient(host, port, processName);
+			logInfo("Engine client created: " + host + ":" + port + ", " + processName);
 		} catch (CompoundException e) {
-			e.printStackTrace();
+			logError("Error creating Apama engine client.", e);
 		}
 	}
 
 	@Stop
 	public void stop() {
 		engineClient.dispose();
+		logInfo("Engine client stopped: " + host + ":" + port + ", " + processName);
 	}
 
 	@Update
 	public void update() {
 		this.stop();
 		this.start();
+	}
+
+	/**
+	 * Log a message at ERROR level. If the Kevoree context is
+	 * <code>null</code>, message is written with <code>System.out</code>.
+	 * 
+	 * @param message
+	 *            the message to log.
+	 */
+	private void logError(String message, Throwable ex) {
+		if (this.context == null) {
+			System.out.println(message);
+			ex.printStackTrace(System.out);
+		} else {
+			Log.error("{}: " + message + System.lineSeparator() + "{}", null, this.context.getPath(), ex.toString());
+		}
+	}
+
+	/**
+	 * Log a message at INFO level. If the Kevoree context is <code>null</code>,
+	 * message is written with <code>System.out</code>.
+	 * 
+	 * @param message
+	 *            the message to log.
+	 */
+	private void logInfo(String message) {
+		if (this.context == null) {
+			System.out.println(message);
+		} else {
+			Log.info("{}: " + message, this.context.getPath());
+		}
 	}
 }
