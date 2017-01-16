@@ -1,89 +1,111 @@
 package eu.heads.apama;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.kevoree.annotation.ComponentType;
 import org.kevoree.annotation.KevoreeInject;
-import org.kevoree.annotation.Output;
 import org.kevoree.annotation.Param;
 import org.kevoree.annotation.Start;
 import org.kevoree.annotation.Stop;
 import org.kevoree.annotation.Update;
+import org.kevoree.api.Context;
+import org.kevoree.log.Log;
 
 import com.apama.engine.MonitorScript;
 import com.apama.engine.beans.EngineClientFactory;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
-import com.apama.event.parser.EventParser;
 import com.apama.util.CompoundException;
-import org.kevoree.api.Context;
-import org.kevoree.api.Port;
 
-@ComponentType(version=1)
+@ComponentType(version = 6, description = "Inject Apama EPL Code into running Correlator.")
 public class ApamaQueryInject {
+
+	private static final String EPL_CODE_DELETED = "Cleanup: all EPL code deleted.";
+
+	private static final String EPL_CODE_WARNINGS = "EPL code injected, no warnings.";
+
+	private static final String FILES_TO_INJECT = "EPL Files to inject:";
+
+	private static final String WARNINGS_FROM_EPL_CODE = "Warnings from EPL code:";
+
+	@Param(defaultValue = "false")
+	private String clean;
 
 	@KevoreeInject
 	private Context context;
 
-	@Output
-	private Port out;
+	private EngineClientInterface engineClient;
 
+	@Param(defaultValue = "")
+	private String files;
 
-	@Param(defaultValue = "172.17.0.2")
+	@Param(defaultValue = "localhost")
 	private String host;
-
-	// @Param(defaultValue = "event Tick { string name; float price; } monitor
-	// simplePrint { Tick t; action onload { on all Tick(*, >10.0): t { send
-	// Tick(t.name, t.price) to \"samplechannel\";}}}")
-	@Param(defaultValue = "event Item { string id; string reference; string streamId; string title; sequence<string> tags;  "
-			+ "string uid; string pageUrl; integer publicationTime; integer insertionTime; sequence<string> mediaIds; "
-			+ "string sentiment;sequence<string> keywords;  sequence<string> entities; boolean original; integer likes; "
-			+ "integer shares; sequence<string> comments; integer numOfComments; boolean isSearched; boolean indexed;"
-			+ " integer alethiometerUserScore; integer positiveVotes; integer negativeVotes; sequence<string> votes; } "
-//			+ "monitor simplePrint { Item t; action onload { on all Item(*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,>5,*,*,*,*,*,*,*,*):"
-			+ "monitor simplePrint { Item t; action onload { on all Item(shares>5):"
-			+ "t { send Item(t.id,t.reference,t.streamId,t.title,t.tags,t.uid,t.pageUrl,t.publicationTime,t.insertionTime,t.mediaIds,"
-			+ "t.sentiment,t.keywords,t.entities,t.original,t.likes,t.shares,t.comments,t.numOfComments,t.isSearched,t.indexed,t.alethiometerUserScore,"
-			+ "t.positiveVotes,t.negativeVotes,t.votes) to \"samplechannel\";}}}")
-	private String query;
-
-	@Param(defaultValue = "my-sample-process")
-	private String processName;
-
-	@Param(defaultValue = "samplechannel")
-	private String channelName;
-
-	@Param(defaultValue = "myconsummer")
-	private String consummerName;
-
-	@Param(defaultValue = "[  {  \"EventTypeName\" : \"Tick\",  \"name\": \"string\",  \"price\": \"float\"}]")
-	private String eventTypeDefinition;
-
 
 	@Param(defaultValue = "15903")
 	private int port;
 
-	private EngineClientInterface engineClient;
-	private EventParser parser;
+	@Param(defaultValue = "my-injection-process")
+	private String processName;
+
+	@Param(defaultValue = "")
+	private String query;
+
+	public void setClean(String clean) {
+		this.clean = clean;
+	}
+
+	public void setCorrelator(String string) {
+		String[] split = string.split(":");
+		this.host = split[0];
+		this.port = Integer.parseInt(split[1]);
+	}
+
+	public void setFiles(String files) {
+		this.files = files;
+	}
 
 	@Start
 	public void start() {
-		final JsonUtil utils = new JsonUtil();
-		utils.initEventType(eventTypeDefinition);
-
 		try {
 			engineClient = EngineClientFactory.createEngineClient(host, port, processName);
-
-			// Inject some MonitorScript
-			MonitorScript epl = new MonitorScript(query);
-			engineClient.injectMonitorScript(epl);
+			if ("true".equalsIgnoreCase(clean)) {
+				engineClient.deleteAll();
+				logInfo(EPL_CODE_DELETED);
+			}
+			if (files != null && !files.isEmpty()) {
+				List<String> fileList = loadFiles(files);
+				logInfo(FILES_TO_INJECT);
+				for (String fileName : fileList) {
+					logInfo(fileName);
+				}
+				String[] injectWarnings = engineClient.injectMonitorScriptFromFile(fileList);
+				if (injectWarnings.length > 0) {
+					logInfo(WARNINGS_FROM_EPL_CODE);
+					for (int i = 0; i < injectWarnings.length; i++) {
+						logInfo(injectWarnings[i]);
+					}
+				} else {
+					logInfo(EPL_CODE_WARNINGS);
+				}
+			} else if (query != null & !query.isEmpty()) {
+				// Inject the MonitorScript from query parameter
+				MonitorScript epl = new MonitorScript(query);
+				engineClient.injectMonitorScript(epl);
+			} else {
+				logInfo("Use parameter 'query' or 'files' to inject EPL code. Both are empty.");
+			}
 		} catch (CompoundException e) {
-			e.printStackTrace();
-			this.stop();
+			logError("Error during EPL code injection.", e);
 		}
 	}
 
 	@Stop
 	public void stop() {
 		// do NOT deleteAll().
-		// This may delete scripts from other applications running in the same correlator.
+		// This may delete scripts from other applications running in the same
+		// correlator.
 		engineClient.dispose();
 	}
 
@@ -91,5 +113,47 @@ public class ApamaQueryInject {
 	public void update() {
 		this.stop();
 		this.start();
+	}
+
+	private List<String> loadFiles(String files2) {
+		List<String> asList = Arrays.asList(files2.split("[;\r\n]"));
+		List<String> fileNames = new ArrayList<>();
+		for (String fileName : asList) {
+			if (!fileName.isEmpty()) {
+				fileNames.add(fileName);
+			}
+		}
+		return fileNames;
+	}
+
+	/**
+	 * Log a message at ERROR level. If the Kevoree context is <code>null</code>,
+	 * message is written with <code>System.out</code>.
+	 * 
+	 * @param message
+	 *            the message to log.
+	 */
+	private void logError(String message, Throwable ex) {
+		if (this.context == null) {
+			System.out.println(message);
+			ex.printStackTrace(System.out);
+		} else {
+			Log.error("{}: " + message + System.lineSeparator() + "{}", null, this.context.getPath(), ex.toString());
+		}
+	}
+
+	/**
+	 * Log a message at INFO level. If the Kevoree context is <code>null</code>,
+	 * message is written with <code>System.out</code>.
+	 * 
+	 * @param message
+	 *            the message to log.
+	 */
+	private void logInfo(String message) {
+		if (this.context == null) {
+			System.out.println(message);
+		} else {
+			Log.info("{}: " + message, this.context.getPath());
+		}
 	}
 }
