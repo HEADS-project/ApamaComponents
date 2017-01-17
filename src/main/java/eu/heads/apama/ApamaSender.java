@@ -11,7 +11,6 @@ import org.kevoree.api.Context;
 import org.kevoree.log.Log;
 
 import com.apama.EngineException;
-import com.apama.engine.EngineStatus;
 import com.apama.engine.beans.EngineClientFactory;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.event.Event;
@@ -21,6 +20,25 @@ import com.apama.event.parser.Field;
 import com.apama.event.parser.FieldTypes;
 import com.apama.util.CompoundException;
 
+/**
+ * The Kevoree component <code>ApamaSender</code> receives Kevoree messages in
+ * the <code>in</code> method and sends these as events to the Apama correlator.
+ * 
+ * The events are send to the default input queue <code>com.apama.input</code>
+ * of Apama.
+ * 
+ * If the message starts with '{', the message is wrapped into an
+ * <code>JsonEvent</code> with <code>message</code> as the only field. Otherwise
+ * it is assumed that the message can be parsed by the Apama event parser and
+ * the message is send 'as is'.
+ * 
+ * The connection to the Apama correlator is configured with the parameters
+ * <code>host</code> and <code>port</code>. The correlator listens at
+ * <code>host:port</code>.
+ *
+ * Prerequisite: Apama Java client API.
+ *
+ */
 @ComponentType(version = 2, description = "Sends Apama events to Apama input channel for messages received on a Kevoree port.")
 public class ApamaSender {
 
@@ -36,8 +54,8 @@ public class ApamaSender {
 	@Param(defaultValue = "15903")
 	private int port = 15903;
 
-	@Param(defaultValue = "my-sender-process")
-	private String processName = "my-sender-process";
+	@Param(defaultValue = "apama-sender-process")
+	private String processName = "apama-sender-process";
 
 	private EngineClientInterface engineClient;
 
@@ -56,8 +74,6 @@ public class ApamaSender {
 				event = new Event(message);
 			}
 			engineClient.sendEvents(event);
-			EngineStatus status = engineClient.getRemoteStatus();
-			logInfo(status.toString());
 		} catch (EngineException e) {
 			logError("Error while sending message to Apama.", e);
 		}
@@ -67,7 +83,7 @@ public class ApamaSender {
 	public void start() {
 		try {
 			engineClient = EngineClientFactory.createEngineClient(host, port, processName);
-			logInfo("Engine client created: " + host + ":" + port + ", " + processName);
+			logInfo("Apama engine client created: " + host + ":" + port + ", " + processName);
 		} catch (CompoundException e) {
 			logError("Error creating Apama engine client.", e);
 		}
@@ -76,7 +92,7 @@ public class ApamaSender {
 	@Stop
 	public void stop() {
 		engineClient.dispose();
-		logInfo("Engine client stopped: " + host + ":" + port + ", " + processName);
+		logInfo("Apama engine client stopped: " + host + ":" + port + ", " + processName);
 	}
 
 	@Update

@@ -18,6 +18,37 @@ import com.apama.engine.beans.EngineClientFactory;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.util.CompoundException;
 
+/**
+ * The Kevoree component <code>ApamaQueryInject</code> injects Apama EPL code
+ * into a running Apama correlator. The EPL code can be set in two different
+ * ways.
+ * <ul>
+ * <li>Set the string parameter <code>query</code> with the EPL code. This is
+ * useful for small code snippets. Code containing <code>package</code>
+ * statements is not suitable for this.</li>
+ * <li>Set the string parameter <code>files</code> with a list of file names.
+ * The file names are separated by ';' or line separators. The file names need
+ * to be in correct order for dependency resolving. Usually the event
+ * definitions are injected before the monitor definitions. The files are
+ * located in Software AG's Apama installation for predefined bundles and in
+ * your Apama project folder.</li>
+ * </ul>
+ * Since the order in which Kevoree components are started is not defined, it is
+ * recommended to use only one <code>ApamaQueryInject</code> component per
+ * Kevoree node.
+ * 
+ * The boolean parameter <code>clean</code> controls if all EPL code is deleted
+ * inside the correlator before injecting the EPL code (value is
+ * <code>true</code>) or else the EPL code is kept (value is
+ * <code>false</code>).
+ * 
+ * The connection to the Apama correlator is configured with the parameters
+ * <code>host</code> and <code>port</code>. The correlator listens at
+ * <code>host:port</code>.
+ * 
+ * Prerequisite: Apama Java client API.
+ *
+ */
 @ComponentType(version = 6, description = "Inject Apama EPL Code into running Correlator.")
 public class ApamaQueryInject {
 
@@ -127,8 +158,8 @@ public class ApamaQueryInject {
 	}
 
 	/**
-	 * Log a message at ERROR level. If the Kevoree context is <code>null</code>,
-	 * message is written with <code>System.out</code>.
+	 * Log a message at ERROR level. If the Kevoree context is
+	 * <code>null</code>, message is written with <code>System.out</code>.
 	 * 
 	 * @param message
 	 *            the message to log.
