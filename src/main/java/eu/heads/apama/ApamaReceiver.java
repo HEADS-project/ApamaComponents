@@ -27,6 +27,19 @@ import com.apama.event.parser.Field;
 import com.apama.event.parser.FieldTypes;
 import com.apama.util.CompoundException;
 
+/**
+ * The Kevoree component <code>ApamaReceiver</code> receives Apama Events and
+ * sends these to the Kevoree port. The receiver listens to Apama channel
+ * configured by the parameter {@link #channelName}.
+ * 
+ * The {@link #start()} method starts a separate thread, which runs the receiver.
+ * 
+ * The connection to the Apama correlator is configured with the parameters
+ * <code>host</code> and <code>port</code>. The correlator listens at
+ * <code>host:port</code>.
+ *
+ * Prerequisite: Apama Java client API.
+ */
 @ComponentType(version = 3, description = "Receives Apama events on the specified Apama channel and forwards these to a provided Kevoree port.")
 public class ApamaReceiver {
 
@@ -42,14 +55,14 @@ public class ApamaReceiver {
 	@Param(defaultValue = "15903")
 	int port = 15903;
 
-	@Param(defaultValue = "samplechannel")
-	String channelName;
+	@Param(defaultValue = "apama-channel")
+	String channelName = "apama-channel";
 
-	@Param(defaultValue = "my-receiver")
-	String consumerName = "my_receiver";
+	@Param(defaultValue = "apama-receiver")
+	String consumerName = "apama-receiver";
 
-	@Param(defaultValue = "my-receiver-process")
-	String processName = "my-receiver-process";
+	@Param(defaultValue = "apama-receiver-process")
+	String processName = "apama-receiver-process";
 
 	EngineClientInterface engineClient;
 
@@ -77,7 +90,7 @@ public class ApamaReceiver {
 		try {
 			engineClient.disconnect();
 		} catch (CompoundException e) {
-			logError("Error while disconnecting engine client", e);
+			logError("Error while disconnecting Apama engine client", e);
 		}
 		stopped = true;
 	}
@@ -91,6 +104,7 @@ public class ApamaReceiver {
 	/**
 	 * Log a message at ERROR level. If the Kevoree context is
 	 * <code>null</code>, message is written with <code>System.out</code>.
+	 * Otherwise use the Kevoree logger from the Kevoree context.
 	 * 
 	 * @param message
 	 *            the message to log.
@@ -106,7 +120,8 @@ public class ApamaReceiver {
 
 	/**
 	 * Log a message at INFO level. If the Kevoree context is <code>null</code>,
-	 * message is written with <code>System.out</code>.
+	 * message is written with <code>System.out</code>. Otherwise use the
+	 * Kevoree logger from the Kevoree context.
 	 * 
 	 * @param message
 	 *            the message to log.
@@ -151,7 +166,7 @@ public class ApamaReceiver {
 							ConsumerOperationsInterface theConsumer = (ConsumerOperationsInterface) event.getSource();
 
 							boolean connected = ((Boolean) event.getNewValue()).booleanValue();
-							logInfo("Property changed for consumer \"" + theConsumer.getName() + "\": now "
+							logInfo("Property changed for Apama consumer \"" + theConsumer.getName() + "\": now "
 									+ (connected ? "connected" : "disconnected"));
 						}
 					}
@@ -184,7 +199,7 @@ public class ApamaReceiver {
 								out.send(evt.getText());
 							}
 						}
-						logInfo("Event listener received event with message: '" + evt.toString() + "'");
+						logInfo("Event listener received Apama event with message: '" + evt.toString() + "'");
 					}
 				});
 				engineClient.connectNow();
