@@ -39,7 +39,7 @@ import com.apama.util.CompoundException;
  * Prerequisite: Apama Java client API.
  *
  */
-@ComponentType(version = 2, description = "Sends Apama events to Apama input channel for messages received on a Kevoree port.")
+@ComponentType(version = 3, description = "Sends Apama events to Apama input channel for messages received on a Kevoree port.")
 public class ApamaSender {
 
 	private static final String FIELD_MESSAGE = "message";

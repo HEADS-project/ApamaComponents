@@ -11,7 +11,7 @@ import com.apama.engine.beans.EngineClientFactory;
 import com.apama.engine.beans.interfaces.EngineClientInterface;
 import com.apama.util.CompoundException;
 
-@ComponentType(version=1)
+@ComponentType(version=2, description="Delete Apama EPL Code from running Correlator.")
 public class ApamaQueryDelete {
 //	@KevoreeInject
 //	org.kevoree.api.Context context;
