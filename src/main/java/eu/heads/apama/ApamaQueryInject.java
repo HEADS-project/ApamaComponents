@@ -49,7 +49,7 @@ import com.apama.util.CompoundException;
  * Prerequisite: Apama Java client API.
  *
  */
-@ComponentType(version = 6, description = "Inject Apama EPL Code into running Correlator.")
+@ComponentType(version = 7, description = "Inject Apama EPL Code into running Correlator.")
 public class ApamaQueryInject {
 
 	private static final String EPL_CODE_DELETED = "Cleanup: all EPL code deleted.";

@@ -40,7 +40,7 @@ import com.apama.util.CompoundException;
  *
  * Prerequisite: Apama Java client API.
  */
-@ComponentType(version = 3, description = "Receives Apama events on the specified Apama channel and forwards these to a provided Kevoree port.")
+@ComponentType(version = 4, description = "Receives Apama events on the specified Apama channel and forwards these to a provided Kevoree port.")
 public class ApamaReceiver {
 
 	private static final String FIELD_MESSAGE = "message";
