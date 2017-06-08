@@ -32,7 +32,8 @@ import com.apama.util.CompoundException;
  * sends these to the Kevoree port. The receiver listens to Apama channel
  * configured by the parameter {@link #channelName}.
  * 
- * The {@link #start()} method starts a separate thread, which runs the receiver.
+ * The {@link #start()} method starts a separate thread, which runs the
+ * receiver.
  * 
  * The connection to the Apama correlator is configured with the parameters
  * <code>host</code> and <code>port</code>. The correlator listens at
@@ -85,10 +86,14 @@ public class ApamaReceiver {
 
 	@Stop
 	public void stop() {
-		eventConsumer.removeAllEventListeners();
-		logInfo("Apama consumer " + consumerName + " removed.");
+		if (eventConsumer != null) {
+			eventConsumer.removeAllEventListeners();
+			logInfo("Apama consumer " + consumerName + " removed.");
+		}
 		try {
-			engineClient.disconnect();
+			if (engineClient != null) {
+				engineClient.disconnect();
+			}
 		} catch (CompoundException e) {
 			logError("Error while disconnecting Apama engine client", e);
 		}
