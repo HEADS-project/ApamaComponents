@@ -91,8 +91,10 @@ public class ApamaSender {
 
 	@Stop
 	public void stop() {
-		engineClient.dispose();
-		logInfo("Apama engine client stopped: " + host + ":" + port + ", " + processName);
+		if (engineClient != null) {
+			engineClient.dispose();
+			logInfo("Apama engine client stopped: " + host + ":" + port + ", " + processName);
+		}
 	}
 
 	@Update
